@@ -7,13 +7,12 @@ library(dplyr)
 ### --------------------------------------------------
 makeFootnote <- function(footnoteText=
                          format(Sys.time(), "%d %b %Y"),
-                         size= .7, color= grey(.5))
-{
+                         size= .7, color= grey(.5)) {
    require(grid)
    pushViewport(viewport())
    grid.text(label= footnoteText ,
-             x = unit(1,"npc") - unit(2, "mm"),
-             y= unit(2, "mm"),
+             x=unit(1,"npc") - unit(2, "mm"),
+             y=unit(2, "mm"),
              just=c("right", "bottom"),
              gp=gpar(cex= size, col=color))
    popViewport()
@@ -52,7 +51,9 @@ data <- read.csv("data/CDC-Wonder–Assault-Rates-by-State-1999-2013.csv")
 
 ind <- match(data$State, state.regions$State)
 data$Region <- state.regions$Region[ind]
-data$Region <- factor(data$Region, levels = c("Northeast", "Midwest", "West", "South"), ordered = TRUE)
+data$Region <- factor(data$Region,
+                      levels = c("Northeast", "Midwest", "West", "South"),
+                      ordered = TRUE)
 data$Abbr <- state.regions$State.Abbr[ind]
 
 ## Set up regions, get rid of DC
@@ -68,7 +69,7 @@ data.reg <- data %>% filter(Abbr != "DC") %>%
 data.lab <- data %>% filter(Year == 2013)
 
 ## Then increment the year slightly to create a gap for the labels
-data.lab$Year <-  data.lab$Year + 0.25
+data.lab$Year <-  data.lab$Year
 
 pdf(file = "figures/assault-deaths-state-level-lineplots-by-region-facet.pdf",
     height = 6, width = 13)
@@ -82,7 +83,7 @@ p0 <- ggplot(subset(data, Abbr !="DC"),
 p1 <- p0 + geom_line(alpha = 0.7, lty = 3) +
     geom_text(data=subset(data.lab, Abbr !="DC"),
               aes(x=Year+0.3,
-                  y=Adjusted+0.1,
+                  y=Adjusted+0.15, # add a little space
                   label=Abbr),
               size = 1.8) +
     geom_smooth(data=data.reg,
